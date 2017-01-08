@@ -32,6 +32,27 @@ $container['db'] = function ($c) {
 //Setting up views:
 $container['view'] = new \Slim\Views\PhpRenderer("../templates/");
 
+//Create a route for the home page
+$app->get('/yomama',function (Request $request, Response $response){
+	$this->logger->addInfo("Home");
+	$mapper =  new HomeMapper($this->db);
+	$home = $mapper->getHome();
+	//$response = $this->view->render($response, "home.php");
+	$response = $this->view->render($response, "home.php", ["home" => $home, "router" => $this->router]);
+    return $response;
+});
+
+//***************** API ***************** 
+//Create a route for the API Events 
+$app->get('/api/events',function (Request $request, Response $response){
+	$this->logger->addInfo("Events");
+	$mapper =  new EventMapper($this->db);
+	$response = $mapper->getEvents();
+	//$response = $this->view->render($response, "events.php", ["events" => $events, "router" => $this->router]);
+    return $response;
+});
+
+
 $app->get('/hello/{name}', function (Request $request, Response $response) {
     $name = $request->getAttribute('name');
     $response->getBody()->write("Hello, $name");
@@ -40,6 +61,20 @@ $app->get('/hello/{name}', function (Request $request, Response $response) {
 });
 
 $app->run();
+
+//Working on events API and response:
+/*
+$app->post('/events', function (Request $request, Response $response) {
+    $this->logger->addInfo("Event list");
+    $mapper = new events(this->db);
+    $events = $mapper->getEvents();
+
+    $response = $this->view->render($response, "events.php", ["events" => $events]);
+    return $response;
+});
+*/
+
+
 //Routes examples:
 /*
 $app->get('/hello/{name}', function (Request $request, Response $response) {
